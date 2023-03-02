@@ -1,0 +1,28 @@
+.container {
+    display: flex;
+    margin: 0 122px;
+    justify-content: space-between;
+}
+
+.columns {
+    display: flex;
+    margin: 48px auto 0 auto;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.fieldset {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+.fieldset_type_sorting {
+    gap: 40px;
+}
+
+.fieldset_type_direction {
+    gap: 12px;
+}

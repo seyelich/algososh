@@ -1,0 +1,26 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 952px;
+    margin: 0 auto;
+}
+
+.fieldset {
+    display: flex;
+    border: none;
+    padding: 0;
+    gap: 12px;
+}
+
+.input {
+    width: 204px;
+}
+
+.circles {
+    margin-top: 120px;
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    align-items: center;
+}
