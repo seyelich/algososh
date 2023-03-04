@@ -1,4 +1,7 @@
-export const swap = (arr: string[] | number[], firstIndex: number, secondIndex: number): void => {
+import { TArr } from "../types/array";
+import { ElementStates } from "../types/element-states";
+
+export const swap = (arr: string[] | number[] | TArr | {val: number, color: ElementStates}[], firstIndex: number, secondIndex: number): void => {
     const temp = arr[firstIndex];
     arr[firstIndex] = arr[secondIndex];
     arr[secondIndex] = temp;

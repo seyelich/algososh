@@ -7,6 +7,8 @@ import { Circle } from "../ui/circle/circle";
 import { useForm } from "../../hooks/useForm";
 import { Queue } from "./queue";
 import { ElementStates } from "../../types/element-states";
+import { HEAD, TAIL } from "../../constants/element-captions";
+import { SHORT_DELAY_IN_MS } from "../../constants/delays";
 
 const q = new Queue<string>(7);
 
@@ -14,7 +16,6 @@ export const QueuePage: React.FC = () => {
   const {values, setValues, handleChange} = useForm({str: ''});
   const [state, setState] = useState(ElementStates.Default);
   const [step, setStep] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
 
   const tail = q.qTail();
   const head = q.qHead();
@@ -26,15 +27,13 @@ export const QueuePage: React.FC = () => {
     setValues({str: ''});
     setState(ElementStates.Changing);
     setStep(tail);
-    setIsLoading(true);
   }
 
   const handleDelete = () => {
     setStep(head);
     setValues({str: ''});
-    setTimeout(() => q.dequeue(), 500); 
+    setTimeout(() => q.dequeue(), SHORT_DELAY_IN_MS); 
     setState(ElementStates.Changing);
-    setIsLoading(true);
   }
 
   const handleReset = () => {
@@ -44,7 +43,7 @@ export const QueuePage: React.FC = () => {
   }
 
   useEffect(() => {
-    const timeout = setTimeout(() => {setState(ElementStates.Default); setIsLoading(false)}, 500);
+    const timeout = setTimeout(() => {setState(ElementStates.Default)}, SHORT_DELAY_IN_MS);
     return () => clearTimeout(timeout);
   }, [state]);
 
@@ -53,23 +52,23 @@ export const QueuePage: React.FC = () => {
       <form className={styles.container} onSubmit={handleSubmit} onReset={handleReset} >
         <fieldset className={styles.fieldset}>
           <Input isLimitText={true} maxLength={4} name='str' value={values.str} onChange={handleChange} />
-          <Button text="Добавить" type="submit" disabled={!values.str || length === q.s()} isLoader={isLoading} />
-          <Button text="Удалить" onClick={handleDelete} disabled={length === 0} isLoader={isLoading} />
+          <Button text="Добавить" type="submit" disabled={!values.str || length === q.s()} />
+          <Button text="Удалить" onClick={handleDelete} disabled={length === 0} />
         </fieldset>
         <Button text="Очистить" type="reset" disabled={length === 0}/>
       </form>
       <div className={styles.circles}>
         {
           q.elements().map((el, ind) => 
-            {console.log(step, ind); return <Circle 
+            <Circle 
               letter={el ? el : undefined} 
               key={ind} 
               index={ind} 
-              tail={ind+1 === tail && !q.isEmpty()  ? 'tail': undefined} 
-              head={ind === head && !q.isEmpty() ? 'head' : undefined}
+              tail={ind+1 === tail && !q.isEmpty()  ? TAIL: undefined} 
+              head={ind === head && !q.isEmpty() ? HEAD : undefined}
               state={step === ind ? state : ElementStates.Default}
-          />})
-        } 
+          />
+        )} 
       </div>
     </SolutionLayout>
   );

@@ -20,7 +20,7 @@ export const StackPage: React.FC = () => {
     setTimeout(() => 
       {
         st.pop();
-        setStep(step-1); //problem with step
+        setStep(step-1);
       }, 500); 
     setValues({str: ''});
     setState(ElementStates.Changing);
@@ -50,7 +50,7 @@ export const StackPage: React.FC = () => {
       <form className={styles.container} onSubmit={handleSubmit} onReset={handleReset} >
         <fieldset className={styles.fieldset}>
           <Input isLimitText={true} maxLength={4} name='str' value={values.str} onChange={handleChange} />
-          <Button text="Добавить" disabled={!values.str || st.size() > 21} type='submit' />
+          <Button text="Добавить" disabled={!values.str || st.size() > 25} type='submit' />
           <Button text="Удалить" onClick={handleDelete} disabled={st.size() === 0}/>
         </fieldset>
         <Button text="Очистить" type="reset" disabled={st.size() === 0} />

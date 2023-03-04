@@ -1,92 +1,56 @@
-import React, { FormEvent, useEffect, useState } from "react";
+import React, { Dispatch, FormEvent, SetStateAction, useState } from "react";
 import { useForm } from "../../hooks/useForm";
 import { Button } from "../ui/button/button";
 import { Circle } from "../ui/circle/circle";
 import { Input } from "../ui/input/input";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
 import styles from './string.module.css';
-import { v4 } from "uuid";
 import { swap } from "../../utils/utils";
 import { ElementStates } from "../../types/element-states";
+import { DELAY_IN_MS } from "../../constants/delays";
 
-export interface LettersStep {
-  letters: string[];
-  index?: number;
-  state?: ElementStates;
-}
+export type TArr = {val: string, color: ElementStates}[]
 
 export const StringComponent: React.FC = () => {
-  const {values, handleChange } = useForm({ word: '' });
-  
-  const [steps, setSteps] = useState<LettersStep[]>([]);
-  const [currentStep, setCurrentStep] = useState<LettersStep | null>(null);
-  const [stepsIndex, setStepsIndex] = useState(0);
+  const {values, setValues, handleChange } = useForm({ word: '' });
+  const [letters, setLetters] = useState<TArr>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    if (steps.length === 0 || stepsIndex >= steps.length) {
-      setIsLoading(false);
-      return;
-    }
+  const onLettersSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    reverse();
+    setValues({word: ''});
+  }
 
+  const reverse = async () => {
     setIsLoading(true);
-    setCurrentStep(steps[stepsIndex]);
-    setTimeout(() => {
-      setStepsIndex(stepsIndex + 1);
-    }, 1000);
-    
-  }, [steps, currentStep, stepsIndex]);
+    const arr = values.word.split('').map((val => ({ val, color: ElementStates.Default })));
+    const mid = Math.ceil(arr.length / 2);
 
-  const onLettersSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    
-    const letters = values.word;
-
-    setCurrentStep(null);
-    setStepsIndex(0);
-    setSteps(getSteps(letters));
-  };
-
-  const getSteps = (source: string): LettersStep[] => {
-    const letters = source.split("");
-    const steps: LettersStep[] = [];
-  
-    if (letters.length === 0) {
-      return steps;
+    if (arr.length === 0) {
+      throw new Error('Enter a string');
     }
   
-    steps.push({
-      letters: [...letters]
-    });
-  
-    let leftIndex = 0;
-    let rightIndex = letters.length - leftIndex - 1;
-  
-    while (leftIndex <= rightIndex) {
-      steps.push({
-        letters: [...letters],
-        index: leftIndex,
-        state: ElementStates.Changing
-      });
-
-      swap(letters, leftIndex, rightIndex);
-
-      steps.push({
-        letters: [...letters],
-        index: leftIndex,
-        state: ElementStates.Modified
-      });
-  
-      leftIndex++;
-      rightIndex--;
+    for(let i=0; i<mid; i++) {
+      let j = arr.length - 1 - i;
+      setLetters([...arr]);
+      await new Promise(resolve => setTimeout(resolve, DELAY_IN_MS));
+      if (i !== j) {
+        arr[i].color = ElementStates.Changing;
+        arr[j].color = ElementStates.Changing;
+        setLetters([...arr]);
+        await new Promise(resolve => setTimeout(resolve, DELAY_IN_MS));
+      };
+      
+      swap(arr, i, j);
+      
+      arr[i].color = ElementStates.Modified;
+      arr[j].color = ElementStates.Modified;
+      
+      setLetters([...arr]);
     }
-  
-    steps.push({
-      letters: [...letters]
-    });
-  
-    return steps;
-  };
+    setIsLoading(false);
+  }
 
   return (
     <SolutionLayout title="Строка">
@@ -95,23 +59,9 @@ export const StringComponent: React.FC = () => {
         <Button text='Развернуть' type="submit" isLoader={isLoading} disabled={!values.word} />
       </form>
       {
-        currentStep &&
         <div className={styles.circles}>
           {
-            currentStep.letters.map((letter, index) => {
-              let stateClass = ElementStates.Default;
-              const stepIndex = currentStep.index;
-              if (stepIndex !== undefined) {
-                if (
-                  index === stepIndex ||
-                  index === currentStep.letters.length - stepIndex - 1
-                ) {
-                  stateClass = currentStep.state ?? ElementStates.Default;
-                }
-              }
-              else { stateClass = ElementStates.Modified}
-              return <Circle letter={letter} key={v4()} state={stateClass} />
-            })
+            letters.map((el, ind) => <Circle letter={el.val} key={ind} state={el.color} />)
           }
         </div>
       }

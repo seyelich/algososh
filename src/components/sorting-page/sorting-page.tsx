@@ -1,105 +1,72 @@
-import React, { FormEvent, useEffect, useState } from "react";
+import React, { FormEvent, useState } from "react";
 import { Direction } from "../../types/direction";
 import { Button } from "../ui/button/button";
 import { RadioInput } from "../ui/radio-input/radio-input";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
 import { randomArr, swap } from "../../utils/utils";
 import { Column } from "../ui/column/column";
-import { v4 } from "uuid";
 import styles from './sorting-page.module.css';
 import { useForm } from "../../hooks/useForm";
 import { ElementStates } from "../../types/element-states";
-
-type SortStep = {
-  nums: number[],
-  index?: number,
-  state?: ElementStates
-}
+import { SHORT_DELAY_IN_MS } from "../../constants/delays";
 
 export const SortingPage: React.FC = () => {
-  const [nums, setNums] = useState<number[]>([]);
+  const [nums, setNums] = useState<{val: number, color: ElementStates}[]>([]);
   const [direction, setDirection] = useState('asc');
-  const [steps, setSteps] = useState<SortStep[]>([]);
-  const [currentStep, setCurrentStep] = useState<SortStep | null>(null);
-  const [stepsIndex, setStepsIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const {values, handleChange} = useForm({sorting: 'selection'});
 
-  useEffect(() => {
-    if (steps.length === 0 || stepsIndex >= steps.length) {
-      setIsLoading(false);
-      return;
-    }
-    
+  const selectionSort = async (arr: {val: number, color: ElementStates}[]) => {
     setIsLoading(true);
-    setCurrentStep(steps[stepsIndex]);
-    setTimeout(() => {
-      setStepsIndex(stepsIndex+1);
-    }, 500);
-  }, [steps, stepsIndex, currentStep, nums, direction]);
-
-
-  const selectionSort = (arr: number[]) => {
     const { length } = arr;
-
+    
     for (let i = 0; i < length - 1; i++) {
       let maxInd = i;
       for (let j = i+1; j < length; j++) {
-        if(direction === 'asc') {
-          if (arr[maxInd] > arr[j]) {
-            steps.push({
-              nums: [...nums],
-              index: maxInd,
-              state: ElementStates.Changing
-            });
-            swap(arr, maxInd, j);
-            steps.push({
-              nums: [...nums],
-              index: maxInd,
-              state: ElementStates.Modified
-            });
-          }
+        arr[i].color = ElementStates.Changing;
+        arr[j].color = ElementStates.Changing;
+        setNums([...arr]);
+
+        await new Promise(resolve => setTimeout(resolve, SHORT_DELAY_IN_MS));
+        if(direction === 'asc' ? arr[maxInd].val > arr[j].val : arr[maxInd].val < arr[j].val) {
+          maxInd = j;
         }
-        else {
-          if (arr[maxInd] < arr[j]) {
-            steps.push({
-              nums: [...nums],
-              index: maxInd,
-              state: ElementStates.Changing
-            });
-            swap(arr, maxInd, j);
-            steps.push({
-              nums: [...nums],
-              index: maxInd,
-              state: ElementStates.Modified
-            });
-          }
-        }
+        arr[j].color = ElementStates.Default;
+        setNums([...arr]);
       }
+
+      swap(arr, maxInd, i);
+      arr[i].color = ElementStates.Modified;
     }
-    
-    return steps;
+    arr[arr.length - 1].color = ElementStates.Modified;
+    setNums([...arr]);
+    setIsLoading(false);
   }
 
-  const bubbleSort = (arr: number[]) => {
+  const bubbleSort = async (arr: {val: number, color: ElementStates}[]) => {
+    setIsLoading(true);
+
     for (let j = arr.length - 1; j > 0; j--) {
       for (let i = 0; i < j; i++) {
-        if (direction === 'asc' ? arr[i] > arr[i + 1] : arr[i] < arr[i + 1]) {
-          steps.push({
-            nums: [...nums],
-            index: i,
-            state: ElementStates.Changing
-          });
+        arr[i].color = ElementStates.Changing;
+        arr[i+1].color = ElementStates.Changing;
+        setNums([...arr]);
+
+        await new Promise(resolve => setTimeout(resolve, SHORT_DELAY_IN_MS));
+        if (direction === 'asc' ? arr[i].val > arr[i + 1].val : arr[i].val < arr[i + 1].val) {
+          arr[i].color = ElementStates.Modified;
+          arr[i+1].color = ElementStates.Modified;
           swap(arr, i, i+1);
-          steps.push({
-            nums: [...nums],
-            index: i,
-            state: ElementStates.Modified
-          });
         }
+        arr[i].color = ElementStates.Default;
+        arr[i+1].color = ElementStates.Modified;
+        setNums([...arr]);
       }
     }
-    return steps;
+    arr[arr.length - 1].color = ElementStates.Modified;
+    arr[0].color = ElementStates.Modified;
+    setNums([...arr]);
+    setIsLoading(false);
   }
 
   const handleSort = () => {
@@ -112,46 +79,57 @@ export const SortingPage: React.FC = () => {
   }
 
   const handleRandomArr = () => {
-    setNums(randomArr());
+    setNums(randomArr().map(el => ({val: el, color: ElementStates.Default})));
   }
 
   const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
-    setCurrentStep(null);
-    setStepsIndex(0);
-    setSteps(handleSort());
+    handleSort();
   }
 
   return (
     <SolutionLayout title="Сортировка массива">
       <form className={styles.container} onSubmit={handleFormSubmit}> 
         <fieldset className={`${styles.fieldset} ${styles.fieldset_type_sorting}`}>
-          <RadioInput label='Выбор' name='sorting' value='selection' onChange={handleChange} defaultChecked />
-          <RadioInput label='Пузырек' name='sorting' value='bubble' onChange={handleChange} />
+          <RadioInput 
+            label='Выбор' 
+            name='sorting' 
+            value='selection' 
+            onChange={handleChange} 
+            defaultChecked disabled={isLoading}
+          />
+          <RadioInput 
+            label='Пузырек' 
+            name='sorting' 
+            value='bubble' 
+            onChange={handleChange} 
+            disabled={isLoading}
+          />
         </fieldset>
         <fieldset className={`${styles.fieldset} ${styles.fieldset_type_direction}`}>
-          <Button text='По возрастанию' sorting={Direction.Ascending} onClick={() => setDirection('asc')} type='submit' isLoader={isLoading} disabled={nums.length===0} />
-          <Button text='По убыванию' sorting={Direction.Descending} onClick={() => setDirection('desc')} type='submit' isLoader={isLoading} disabled={nums.length===0} />
+          <Button 
+            text='По возрастанию' 
+            sorting={Direction.Ascending} 
+            onClick={() => setDirection('asc')} 
+            type='submit' 
+            isLoader={direction === 'asc' && isLoading} 
+            disabled={direction === 'desc' && isLoading || nums.length===0} 
+            extraClass={styles.btn}
+          />
+          <Button 
+            text='По убыванию' 
+            sorting={Direction.Descending} 
+            onClick={() => setDirection('desc')} 
+            type='submit' 
+            isLoader={direction === 'desc' && isLoading} 
+            disabled={direction === 'asc' && isLoading || nums.length===0} 
+            extraClass={styles.btn}
+          />
         </fieldset>
-        <Button text="Новый массив" onClick={handleRandomArr}/>
+        <Button text="Новый массив" onClick={handleRandomArr} disabled={isLoading} />
       </form>
       <div className={styles.columns}>
-        { currentStep ? currentStep.nums.map((num, index) => {
-            let stateClass = ElementStates.Default;
-            const stepIndex = currentStep.index;
-            if (stepIndex !== undefined) {
-              if (
-                index === stepIndex ||
-                index === currentStep.nums.length - stepIndex - 1
-              ) {
-                stateClass = currentStep.state ?? ElementStates.Default;;
-              }
-            }
-            return <Column index={num} key={v4()} state={stateClass} />
-          })
-          :  nums.map(num => <Column index={num} key={v4()} />)
-        }
+        {nums.map((el, ind) => <Column index={el.val} key={ind} state={el.color} />)}
       </div>
     </SolutionLayout>
   );
