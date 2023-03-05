@@ -81,10 +81,12 @@ export class LinkedList<T> implements ILinkedList<T>{
         if(this.head === null) {
             this.head = node;
         } else {
-            this.head.next = node;
+            const curr = this.head;
             this.head = node;
-            ++this.size;
+            this.head.next = curr;
         }
+        
+        ++this.size;
     }
 
     deleteByInd(ind: number) {
