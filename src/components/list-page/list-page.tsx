@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { DELAY_IN_MS } from "../../constants/delays";
 import { useForm } from "../../hooks/useForm";
+import { TArr, TEl } from "../../types/array";
 import { ElementStates } from "../../types/element-states";
 import { getRandomInt } from "../../utils/utils";
 import { Button } from "../ui/button/button";
@@ -11,17 +12,19 @@ import { SolutionLayout } from "../ui/solution-layout/solution-layout";
 import { LinkedList } from "./list";
 import styles from './list-page.module.css';
 
+type TListArr = (TEl<string> & {small: boolean})[];
+
 export const ListPage: React.FC = () => {
   const list = useMemo(() => new LinkedList<string>(Array.from({length: 4}, () => getRandomInt(1,5).toString())), []);
 
   const getColoredArr = () => {
-    return list.toArray().map(el => ({val: el, small:false, state: ElementStates.Default}));
+    return list.toArray().map(el => ({val: el, small:false, color: ElementStates.Default}));
   }
 
   const [name, setName] = useState('');
   const { values, setValues, handleChange } = useForm({val: '', ind: ''});
   const [isLoading, setIsLoading] = useState(false);
-  const [arr, setArr] = useState<{val: string, small:boolean, state: ElementStates}[]>([]);
+  const [arr, setArr] = useState<TListArr>([]);
   const [curr, setCurr] = useState<number>(0);
 
   useEffect(() => {
@@ -37,13 +40,13 @@ export const ListPage: React.FC = () => {
     list.prepend(value);
     setValues({val: '', ind: ''});
     const newArr = getColoredArr();
-    newArr[0] = {...newArr[0], small: true, state: ElementStates.Changing};
+    newArr[0] = {...newArr[0], small: true, color: ElementStates.Changing};
     setArr([...newArr]);
     await new Promise(resolve => setTimeout(resolve, DELAY_IN_MS));
-    newArr[0] = {...newArr[0], small: false, state: ElementStates.Modified};
+    newArr[0] = {...newArr[0], small: false, color: ElementStates.Modified};
     setArr([...newArr]);
     await new Promise(resolve => setTimeout(resolve, DELAY_IN_MS));
-    newArr[0] = {...newArr[0], small: false, state: ElementStates.Default};
+    newArr[0] = {...newArr[0], small: false, color: ElementStates.Default};
     setArr([...newArr]);
     setIsLoading(false);
   }
@@ -54,14 +57,14 @@ export const ListPage: React.FC = () => {
     list.append(value);
 
     const newArr = getColoredArr();
-    newArr[newArr.length-1] = {val: value, small: true, state: ElementStates.Changing};
+    newArr[newArr.length-1] = {val: value, small: true, color: ElementStates.Changing};
 
     setArr(newArr);
     setValues({val: '', ind: ''});
     await new Promise(resolve => setTimeout(resolve, DELAY_IN_MS));
-    setArr([...arr, {val: value, small: false, state: ElementStates.Modified}]);
+    setArr([...arr, {val: value, small: false, color: ElementStates.Modified}]);
     await new Promise(resolve => setTimeout(resolve, DELAY_IN_MS));
-    setArr([...arr, {val: value, small: false, state: ElementStates.Default}]);
+    setArr([...arr, {val: value, small: false, color: ElementStates.Default}]);
     setIsLoading(false);
   }
 
@@ -71,8 +74,8 @@ export const ListPage: React.FC = () => {
     setValues({val: '', ind: ''});
     let newArr = [...arr];
 
-    newArr.unshift({ val: '', small: false, state: ElementStates.Default});
-    newArr[1] = {...newArr[1], small: true, state: ElementStates.Changing};
+    newArr.unshift({ val: '', small: false, color: ElementStates.Default});
+    newArr[1] = {...newArr[1], small: true, color: ElementStates.Changing};
     
     setArr(newArr);
 
@@ -90,8 +93,8 @@ export const ListPage: React.FC = () => {
     setName('delTail');
     setValues({val: '', ind: ''});
     let newArr = [...arr];
-    newArr.push({ val: '', small: false, state: ElementStates.Default});
-    newArr[newArr.length-2] = {...newArr[newArr.length-2], small: true, state: ElementStates.Changing};
+    newArr.push({ val: '', small: false, color: ElementStates.Default});
+    newArr[newArr.length-2] = {...newArr[newArr.length-2], small: true, color: ElementStates.Changing};
     setArr(newArr);
     await new Promise(resolve => setTimeout(resolve, DELAY_IN_MS));
     list.deleteTail();
@@ -105,19 +108,19 @@ export const ListPage: React.FC = () => {
     setIsLoading(true);
     list.addByInd(value, index);
     const newArr = getColoredArr();
-    newArr[index] = {val: value, small: true, state: ElementStates.Changing};
+    newArr[index] = {val: value, small: true, color: ElementStates.Changing};
 
     for(let i=0; i<=index; i++) {
       await new Promise(resolve => setTimeout(resolve, DELAY_IN_MS));
       if(i<=index) {
         setCurr(i);
-        newArr[i-1] = {...newArr[i-1], state: ElementStates.Changing};
+        newArr[i-1] = {...newArr[i-1], color: ElementStates.Changing};
         setArr([...newArr]);
         
       }
     }
 
-    newArr[index] = {val: value, small: false, state: ElementStates.Modified};
+    newArr[index] = {val: value, small: false, color: ElementStates.Modified};
     setArr(newArr);
 
     await new Promise(resolve => setTimeout(resolve, DELAY_IN_MS));
@@ -135,13 +138,13 @@ export const ListPage: React.FC = () => {
       await new Promise(resolve => setTimeout(resolve, DELAY_IN_MS));
       if(i<=index) {
         setCurr(i);
-        newArr[i] = {...newArr[i], state: ElementStates.Changing};
+        newArr[i] = {...newArr[i], color: ElementStates.Changing};
         setArr(newArr);
       }
     }
 
-    newArr[index] = {...newArr[index], small: true, state: ElementStates.Changing};
-    newArr.splice(index, 0, {val: '', small: false, state: ElementStates.Default});
+    newArr[index] = {...newArr[index], small: true, color: ElementStates.Changing};
+    newArr.splice(index, 0, {val: '', small: false, color: ElementStates.Default});
     
     setArr(newArr);
 
@@ -155,11 +158,11 @@ export const ListPage: React.FC = () => {
   const setHead = (i: number) => {
     switch (name) {
       case 'addHead':
-        return i===1 && arr[0].small ? <Circle letter={arr[0].val} state={arr[0].state} isSmall={true} /> : undefined;
+        return i===1 && arr[0].small ? <Circle letter={arr[0].val} state={arr[0].color} isSmall={true} /> : undefined;
       case 'addTail':
-        return i===arr.length-2 && arr[arr.length-1].small ? <Circle letter={arr[arr.length-1].val} state={arr[arr.length-1].state} isSmall={true} /> : undefined;
+        return i===arr.length-2 && arr[arr.length-1].small ? <Circle letter={arr[arr.length-1].val} state={arr[arr.length-1].color} isSmall={true} /> : undefined;
       case 'addInd': 
-          return i === curr && arr[index].small ? <Circle letter={arr[index].val} state={arr[index].state} isSmall={true} /> : undefined;
+          return i === curr && arr[index].small ? <Circle letter={arr[index].val} state={arr[index].color} isSmall={true} /> : undefined;
       default:
         return i === 0 ? 'head' : undefined
     }
@@ -168,11 +171,11 @@ export const ListPage: React.FC = () => {
   const setTail = (i: number) => {
     switch (name) {
       case 'delHead':
-        return i===0 && arr.length > 1 && arr[1].small ? <Circle letter={arr[1].val} state={arr[1].state} isSmall={true} /> : undefined;
+        return i===0 && arr.length > 1 && arr[1].small ? <Circle letter={arr[1].val} state={arr[1].color} isSmall={true} /> : undefined;
       case 'delTail':
-        return i===arr.length-1 && arr.length > 2 && arr[arr.length-2].small ? <Circle letter={arr[arr.length-2].val} state={arr[arr.length-2].state} isSmall={true} /> : undefined;
+        return i===arr.length-1 && arr.length > 2 && arr[arr.length-2].small ? <Circle letter={arr[arr.length-2].val} state={arr[arr.length-2].color} isSmall={true} /> : undefined;
       case 'delInd':
-        return i === index && arr.length > index+1 && arr[index+1].small ? <Circle letter={arr[index+1].val} state={arr[index+1].state} isSmall={true} /> : undefined;
+        return i === index && arr.length > index+1 && arr[index+1].small ? <Circle letter={arr[index+1].val} state={arr[index+1].color} isSmall={true} /> : undefined;
       default:
         return i === arr.length-1 ? 'tail' : undefined
     }
@@ -253,7 +256,7 @@ export const ListPage: React.FC = () => {
               <Circle 
                 letter={el.val}
                 index={i}
-                state={el.state}
+                state={el.color}
                 head={setHead(i)}
                 tail={setTail(i)}
               />

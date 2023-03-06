@@ -1,4 +1,4 @@
-import React, { Dispatch, FormEvent, SetStateAction, useState } from "react";
+import React, { FormEvent, useState } from "react";
 import { useForm } from "../../hooks/useForm";
 import { Button } from "../ui/button/button";
 import { Circle } from "../ui/circle/circle";
@@ -8,12 +8,11 @@ import styles from './string.module.css';
 import { swap } from "../../utils/utils";
 import { ElementStates } from "../../types/element-states";
 import { DELAY_IN_MS } from "../../constants/delays";
-
-export type TArr = {val: string, color: ElementStates}[]
+import { TArr } from "../../types/array";
 
 export const StringComponent: React.FC = () => {
   const {values, setValues, handleChange } = useForm({ word: '' });
-  const [letters, setLetters] = useState<TArr>([]);
+  const [letters, setLetters] = useState<TArr<string>>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const onLettersSubmit = (e: FormEvent<HTMLFormElement>) => {

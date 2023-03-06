@@ -9,9 +9,10 @@ import styles from './sorting-page.module.css';
 import { useForm } from "../../hooks/useForm";
 import { ElementStates } from "../../types/element-states";
 import { SHORT_DELAY_IN_MS } from "../../constants/delays";
+import { TArr } from "../../types/array";
 
 export const SortingPage: React.FC = () => {
-  const [nums, setNums] = useState<{val: number, color: ElementStates}[]>([]);
+  const [nums, setNums] = useState<TArr<number>>([]);
   const [direction, setDirection] = useState('asc');
   const [isLoading, setIsLoading] = useState(false);
   const {values, handleChange} = useForm({sorting: 'selection'});
