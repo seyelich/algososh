@@ -1,7 +1,7 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { MouseEvent, useEffect, useMemo, useState } from "react";
 import { DELAY_IN_MS } from "../../constants/delays";
 import { useForm } from "../../hooks/useForm";
-import { TArr, TEl } from "../../types/array";
+import { TArr } from "../../types/array";
 import { ElementStates } from "../../types/element-states";
 import { getRandomInt } from "../../utils/utils";
 import { Button } from "../ui/button/button";
@@ -12,20 +12,19 @@ import { SolutionLayout } from "../ui/solution-layout/solution-layout";
 import { LinkedList } from "./list";
 import styles from './list-page.module.css';
 
-type TListArr = (TEl<string> & {small: boolean})[];
-
 export const ListPage: React.FC = () => {
   const list = useMemo(() => new LinkedList<string>(Array.from({length: 4}, () => getRandomInt(1,5).toString())), []);
 
   const getColoredArr = () => {
-    return list.toArray().map(el => ({val: el, small:false, color: ElementStates.Default}));
+    return list.toArray().map(el => ({val: el, color: ElementStates.Default}));
   }
 
   const [name, setName] = useState('');
   const { values, setValues, handleChange } = useForm({val: '', ind: ''});
   const [isLoading, setIsLoading] = useState(false);
-  const [arr, setArr] = useState<TListArr>([]);
-  const [curr, setCurr] = useState<number>(0);
+  const [arr, setArr] = useState<TArr<string>>([]);
+  const [currInd, setCurrInd] = useState<number>(0);
+  const [currVal, setCurrVal] = useState<string>('');
 
   useEffect(() => {
     setArr(getColoredArr())
@@ -34,148 +33,131 @@ export const ListPage: React.FC = () => {
   const value = values.val;
   const index = Number(values.ind);
   
-  const handleAddHead = async () => {
-    setIsLoading(true);
-    setName('addHead');
-    list.prepend(value);
-    setValues({val: '', ind: ''});
-    const newArr = getColoredArr();
-    newArr[0] = {...newArr[0], small: true, color: ElementStates.Changing};
-    setArr([...newArr]);
-    await new Promise(resolve => setTimeout(resolve, DELAY_IN_MS));
-    newArr[0] = {...newArr[0], small: false, color: ElementStates.Modified};
-    setArr([...newArr]);
-    await new Promise(resolve => setTimeout(resolve, DELAY_IN_MS));
-    newArr[0] = {...newArr[0], small: false, color: ElementStates.Default};
-    setArr([...newArr]);
-    setIsLoading(false);
+  const handleAddHead = (e: MouseEvent<HTMLButtonElement>) => {
+    handleAdd(0, e.currentTarget.name);
   }
  
-  const handleAddTail = async () => {
-    setIsLoading(true);
-    setName('addTail');
-    list.append(value);
-
-    const newArr = getColoredArr();
-    newArr[newArr.length-1] = {val: value, small: true, color: ElementStates.Changing};
-
-    setArr(newArr);
-    setValues({val: '', ind: ''});
-    await new Promise(resolve => setTimeout(resolve, DELAY_IN_MS));
-    setArr([...arr, {val: value, small: false, color: ElementStates.Modified}]);
-    await new Promise(resolve => setTimeout(resolve, DELAY_IN_MS));
-    setArr([...arr, {val: value, small: false, color: ElementStates.Default}]);
-    setIsLoading(false);
+  const handleAddTail = (e: MouseEvent<HTMLButtonElement>) => {
+    handleAdd(arr.length-1, e.currentTarget.name);
   }
 
-  const handleDeleteHead = async () => {
-    setIsLoading(true);
-    setName('delHead');
-    setValues({val: '', ind: ''});
-    let newArr = [...arr];
+  const handleAddInd = (e: MouseEvent<HTMLButtonElement>) => {
+    handleAdd(index, e.currentTarget.name);
+  }
 
-    newArr.unshift({ val: '', small: false, color: ElementStates.Default});
-    newArr[1] = {...newArr[1], small: true, color: ElementStates.Changing};
+  const handleDeleteHead = (e: MouseEvent<HTMLButtonElement>) => {
+    handleDelete(0, e.currentTarget.name);
+  }
+
+  const handleDeleteTail = (e: MouseEvent<HTMLButtonElement>) => {
+    handleDelete(arr.length-1, e.currentTarget.name);
+  }
+
+  const handleDelInd = (e: MouseEvent<HTMLButtonElement>) => {
+    handleDelete(index, e.currentTarget.name);
+  }
+
+  const handleDelete = async (i: number, operation: string) => {
+    setIsLoading(true);
+    setName(operation);
     
-    setArr(newArr);
-
-    await new Promise(resolve => setTimeout(resolve, DELAY_IN_MS));
-    list.deleteHead();
-    
-    newArr = getColoredArr();
-    setArr(newArr);
-
-    setIsLoading(false);
-  }
-
-  const handleDeleteTail = async () => {
-    setIsLoading(true);
-    setName('delTail');
-    setValues({val: '', ind: ''});
-    let newArr = [...arr];
-    newArr.push({ val: '', small: false, color: ElementStates.Default});
-    newArr[newArr.length-2] = {...newArr[newArr.length-2], small: true, color: ElementStates.Changing};
-    setArr(newArr);
-    await new Promise(resolve => setTimeout(resolve, DELAY_IN_MS));
-    list.deleteTail();
-    newArr = getColoredArr();
-    setArr(newArr);
-    setIsLoading(false);
-  }
-
-  const handleAddInd = async () => {
-    setName('addInd');
-    setIsLoading(true);
-    list.addByInd(value, index);
-    const newArr = getColoredArr();
-    newArr[index] = {val: value, small: true, color: ElementStates.Changing};
-
-    for(let i=0; i<=index; i++) {
-      await new Promise(resolve => setTimeout(resolve, DELAY_IN_MS));
-      if(i<=index) {
-        setCurr(i);
-        newArr[i-1] = {...newArr[i-1], color: ElementStates.Changing};
-        setArr([...newArr]);
-        
-      }
-    }
-
-    newArr[index] = {val: value, small: false, color: ElementStates.Modified};
-    setArr(newArr);
-
-    await new Promise(resolve => setTimeout(resolve, DELAY_IN_MS));
-    setArr(getColoredArr());
-    setIsLoading(false);
-    setCurr(0);
-  }
-  
-  const handleDelInd = async () => {
-    setName('delInd');
-    setIsLoading(true);
     const newArr = [...arr];
+    setCurrVal(newArr[i].val);
 
-    for(let i=0; i<=index; i++) {
-      await new Promise(resolve => setTimeout(resolve, DELAY_IN_MS));
-      if(i<=index) {
-        setCurr(i);
-        newArr[i] = {...newArr[i], color: ElementStates.Changing};
-        setArr(newArr);
+    if(i === 0 || i === newArr.length-1 && operation !== 'delInd') {
+      newArr[i] = {...newArr[i], color: ElementStates.Changing};
+      setArr([...newArr]);
+    } else {
+      for(let i=0; i<=index; i++) {
+        await new Promise(resolve => setTimeout(resolve, DELAY_IN_MS));
+        if(i<=index) {
+          setCurrInd(i);
+          newArr[i] = {...newArr[i], color: ElementStates.Changing};
+          setArr([...newArr]);
+        }
       }
     }
 
-    newArr[index] = {...newArr[index], small: true, color: ElementStates.Changing};
-    newArr.splice(index, 0, {val: '', small: false, color: ElementStates.Default});
-    
-    setArr(newArr);
-
     await new Promise(resolve => setTimeout(resolve, DELAY_IN_MS));
-    list.deleteByInd(index);
+    newArr[i] = {...newArr[i], val: '', color: ElementStates.Default};
+    setArr(newArr);
+    list.deleteByInd(i);
+    
+    await new Promise(resolve => setTimeout(resolve, DELAY_IN_MS));
     setArr(getColoredArr());
     setIsLoading(false);
-    setCurr(0);
+    setValues({val: '', ind: ''});
+    setName('');
   }
+
+  const handleAdd = async (i: number, operation: string) => {
+    setIsLoading(true);
+    setName(operation);
+    
+    let newArr = [...arr];
+    i === newArr.length-1 ? list.append(value) : list.addByInd(value, i);
+    setCurrVal(value);
+    
+    if(i === 0 || i === newArr.length-1 && operation !== 'addInd') {
+      newArr = getColoredArr();
+      const actualIndex = i === 0 ? i : i+1
+      await new Promise(resolve => setTimeout(resolve, DELAY_IN_MS));
+      newArr[actualIndex] = {...newArr[actualIndex], color: ElementStates.Modified};
+      setArr([...newArr]);
+      setName('');
+
+      await new Promise(resolve => setTimeout(resolve, DELAY_IN_MS));
+      newArr[actualIndex] = {...newArr[actualIndex], color: ElementStates.Default};
+      setArr([...newArr]);
+      setIsLoading(false);
+    } else {
+      setCurrInd(0);
+      for(let i=0; i<=index; i++) {
+        await new Promise(resolve => setTimeout(resolve, DELAY_IN_MS));
+        if(i<=index) {
+          setCurrInd(i);
+          newArr[i-1] = {...newArr[i-1], color: ElementStates.Changing};
+          setArr([...newArr]);
+        }
+      }
   
+      await new Promise(resolve => setTimeout(resolve, DELAY_IN_MS));
+      newArr = getColoredArr();
+      newArr[index] = {val: value, color: ElementStates.Modified};
+      setArr([...newArr]);
+      setCurrInd(-1);
+  
+      await new Promise(resolve => setTimeout(resolve, DELAY_IN_MS));
+      setArr(getColoredArr());
+      setIsLoading(false);
+      setValues({val: '', ind: ''});
+      setName('');
+    }
+  }
+
   const setHead = (i: number) => {
+    const head = (condition: boolean) => condition ? <Circle letter={currVal} state={ElementStates.Changing} isSmall={true} /> : i === 0 ? 'head' : undefined;
     switch (name) {
       case 'addHead':
-        return i===1 && arr[0].small ? <Circle letter={arr[0].val} state={arr[0].color} isSmall={true} /> : undefined;
+        return head(i===0)
       case 'addTail':
-        return i===arr.length-2 && arr[arr.length-1].small ? <Circle letter={arr[arr.length-1].val} state={arr[arr.length-1].color} isSmall={true} /> : undefined;
+        return head(i===arr.length-1)
       case 'addInd': 
-          return i === curr && arr[index].small ? <Circle letter={arr[index].val} state={arr[index].color} isSmall={true} /> : undefined;
+          return head(i === currInd)
       default:
         return i === 0 ? 'head' : undefined
     }
   }
 
   const setTail = (i: number) => {
+    const tail = (condition: boolean) => condition ? <Circle letter={currVal} state={ElementStates.Changing} isSmall={true} /> : i === arr.length-1 ? 'tail' : undefined;
     switch (name) {
       case 'delHead':
-        return i===0 && arr.length > 1 && arr[1].small ? <Circle letter={arr[1].val} state={arr[1].color} isSmall={true} /> : undefined;
+        return tail(i===0 && arr[i].val === '')
       case 'delTail':
-        return i===arr.length-1 && arr.length > 2 && arr[arr.length-2].small ? <Circle letter={arr[arr.length-2].val} state={arr[arr.length-2].color} isSmall={true} /> : undefined;
+        return tail(i===arr.length-1 && arr[i].val === '')
       case 'delInd':
-        return i === index && arr.length > index+1 && arr[index+1].small ? <Circle letter={arr[index+1].val} state={arr[index+1].color} isSmall={true} /> : undefined;
+        return tail(i === index && arr[i].val === '')
       default:
         return i === arr.length-1 ? 'tail' : undefined
     }
@@ -197,6 +179,7 @@ export const ListPage: React.FC = () => {
           />
           <Button 
             text='Добавить в head' 
+            name='addHead'
             onClick={handleAddHead} 
             disabled={name !== 'addHead' && isLoading || list.getSize() === 6 || values.val === ''}
             isLoader={name === 'addHead' && isLoading}
@@ -210,6 +193,7 @@ export const ListPage: React.FC = () => {
           />
           <Button 
             text='Удалить из head' 
+            name="delHead" 
             onClick={handleDeleteHead} 
             disabled={name !== 'delHead' && isLoading || list.getSize() === 0} 
             isLoader={name === 'delHead' && isLoading}
@@ -251,7 +235,6 @@ export const ListPage: React.FC = () => {
       <ul className={styles.circles} >
         {
           arr.map((el, i) =>
-            !el.small &&
             <li className={styles.circle} key={i}>
               <Circle 
                 letter={el.val}

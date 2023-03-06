@@ -1,8 +1,6 @@
 import { ElementStates } from "./element-states";
 
-export type TEl<T> = {
+export type TArr<T> = {
     val: T, 
     color: ElementStates,
-}
-
-export type TArr<T> = TEl<T>[]
+}[]

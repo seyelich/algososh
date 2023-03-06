@@ -104,13 +104,10 @@ export class LinkedList<T> implements ILinkedList<T>{
                         curr = curr.next;
                         ind = ind - 1;
                     }
-                  
-                    const value = curr.value;
                     curr.next = curr.next!.next;
                 }
+                --this.size;
             }
-
-            --this.size;
         }
     }
 
