@@ -1,5 +1,6 @@
 import React, { MouseEvent, useEffect, useMemo, useState } from "react";
 import { DELAY_IN_MS } from "../../constants/delays";
+import { HEAD, TAIL } from "../../constants/element-captions";
 import { useForm } from "../../hooks/useForm";
 import { TArr } from "../../types/array";
 import { ElementStates } from "../../types/element-states";
@@ -136,7 +137,7 @@ export const ListPage: React.FC = () => {
   }
 
   const setHead = (i: number) => {
-    const head = (condition: boolean) => condition ? <Circle letter={currVal} state={ElementStates.Changing} isSmall={true} /> : i === 0 ? 'head' : undefined;
+    const head = (condition: boolean) => condition ? <Circle letter={currVal} state={ElementStates.Changing} isSmall={true} /> : i === 0 ? HEAD : undefined;
     switch (name) {
       case 'addHead':
         return head(i===0)
@@ -145,12 +146,12 @@ export const ListPage: React.FC = () => {
       case 'addInd': 
           return head(i === currInd)
       default:
-        return i === 0 ? 'head' : undefined
+        return i === 0 ? HEAD : undefined
     }
   }
 
   const setTail = (i: number) => {
-    const tail = (condition: boolean) => condition ? <Circle letter={currVal} state={ElementStates.Changing} isSmall={true} /> : i === arr.length-1 ? 'tail' : undefined;
+    const tail = (condition: boolean) => condition ? <Circle letter={currVal} state={ElementStates.Changing} isSmall={true} /> : i === arr.length-1 ? TAIL : undefined;
     switch (name) {
       case 'delHead':
         return tail(i===0 && arr[i].val === '')
@@ -159,7 +160,7 @@ export const ListPage: React.FC = () => {
       case 'delInd':
         return tail(i === index && arr[i].val === '')
       default:
-        return i === arr.length-1 ? 'tail' : undefined
+        return i === arr.length-1 ? TAIL : undefined
     }
   }
 
