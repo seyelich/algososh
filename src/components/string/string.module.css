@@ -1,0 +1,13 @@
+.container {
+    display: flex;
+    width: 522px;
+    margin: 0 auto;
+    gap: 12px;
+}
+
+.circles {
+    display: flex;
+    gap: 16px;
+    margin-top: 120px;
+    justify-content: center;
+}
