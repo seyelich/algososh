@@ -16,6 +16,8 @@ export const QueuePage: React.FC = () => {
   const {values, setValues, handleChange} = useForm({str: ''});
   const [state, setState] = useState(ElementStates.Default);
   const [step, setStep] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [type, setType] = useState('');
 
   const tail = q.qTail();
   const head = q.qHead();
@@ -23,6 +25,8 @@ export const QueuePage: React.FC = () => {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsLoading(true);
+    setType('submit');
     q.enqueue(values.str);
     setValues({str: ''});
     setState(ElementStates.Changing);
@@ -30,6 +34,8 @@ export const QueuePage: React.FC = () => {
   }
 
   const handleDelete = () => {
+    setIsLoading(true);
+    setType('');
     setStep(head);
     setValues({str: ''});
     setTimeout(() => q.dequeue(), SHORT_DELAY_IN_MS); 
@@ -43,7 +49,7 @@ export const QueuePage: React.FC = () => {
   }
 
   useEffect(() => {
-    const timeout = setTimeout(() => {setState(ElementStates.Default)}, SHORT_DELAY_IN_MS);
+    const timeout = setTimeout(() => {setState(ElementStates.Default); setIsLoading(false)}, SHORT_DELAY_IN_MS);
     return () => clearTimeout(timeout);
   }, [state]);
 
@@ -51,11 +57,28 @@ export const QueuePage: React.FC = () => {
     <SolutionLayout title="Очередь">
       <form className={styles.container} onSubmit={handleSubmit} onReset={handleReset} >
         <fieldset className={styles.fieldset}>
-          <Input isLimitText={true} maxLength={4} name='str' value={values.str} onChange={handleChange} />
-          <Button text="Добавить" type="submit" disabled={!values.str || length === q.s()} />
-          <Button text="Удалить" onClick={handleDelete} disabled={length === 0} />
+          <Input 
+            isLimitText={true} 
+            maxLength={4} 
+            name='str' 
+            value={values.str} 
+            onChange={handleChange} 
+            disabled={length === q.s()}
+          />
+          <Button 
+            text="Добавить" 
+            type="submit" 
+            disabled={!values.str || length === q.s() || isLoading}
+            isLoader={type === 'submit' && isLoading}
+          />
+          <Button 
+            text="Удалить" 
+            onClick={handleDelete} 
+            disabled={length === 0 || isLoading} 
+            isLoader={type === '' && isLoading}
+          />
         </fieldset>
-        <Button text="Очистить" type="reset" disabled={length === 0}/>
+        <Button text="Очистить" type="reset" disabled={length === 0 || isLoading}/>
       </form>
       <div className={styles.circles}>
         {

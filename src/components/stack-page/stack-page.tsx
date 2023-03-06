@@ -1,5 +1,4 @@
 import React, { FormEvent, useEffect, useState } from "react";
-import { v4 } from "uuid";
 import { useForm } from "../../hooks/useForm";
 import { Button } from "../ui/button/button";
 import { Circle } from "../ui/circle/circle";
@@ -15,8 +14,12 @@ export const StackPage: React.FC = () => {
   const { values, setValues, handleChange } = useForm({ str: '' });
   const [step, setStep] = useState(-1);
   const [state, setState] = useState(ElementStates.Default);
+  const [isLoading, setIsLoading] = useState(false);
+  const [type, setType] = useState('');
 
   const handleDelete = () => {
+    setIsLoading(true);
+    setType('');
     setTimeout(() => 
       {
         st.pop();
@@ -34,6 +37,8 @@ export const StackPage: React.FC = () => {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setType('submit');
+    setIsLoading(true);
     st.push(values.str);
     setValues({str: ''});
     setState(ElementStates.Changing);
@@ -41,7 +46,7 @@ export const StackPage: React.FC = () => {
   }
 
   useEffect(() => {
-    const timeout = setTimeout(() => {setState(ElementStates.Default)}, 500);
+    const timeout = setTimeout(() => {setState(ElementStates.Default); setIsLoading(false)}, 500);
     return () => clearTimeout(timeout);
   }, [state]);
 
@@ -50,17 +55,27 @@ export const StackPage: React.FC = () => {
       <form className={styles.container} onSubmit={handleSubmit} onReset={handleReset} >
         <fieldset className={styles.fieldset}>
           <Input isLimitText={true} maxLength={4} name='str' value={values.str} onChange={handleChange} />
-          <Button text="Добавить" disabled={!values.str || st.size() > 25} type='submit' />
-          <Button text="Удалить" onClick={handleDelete} disabled={st.size() === 0}/>
+          <Button 
+            text="Добавить" 
+            disabled={!values.str || st.size() > 25 || isLoading} 
+            type='submit' 
+            isLoader={type === 'submit' && isLoading} 
+          />
+          <Button 
+            text="Удалить" 
+            onClick={handleDelete} 
+            disabled={st.size() === 0 || isLoading}
+            isLoader={type === '' && isLoading} 
+          />
         </fieldset>
-        <Button text="Очистить" type="reset" disabled={st.size() === 0} />
+        <Button text="Очистить" type="reset" disabled={st.size() === 0 || isLoading} />
       </form>
       <div className={styles.circles}>
         {
           st.elements().map((el, ind, arr) => 
             <Circle 
               letter={el} 
-              key={v4()} 
+              key={ind} 
               index={ind} 
               head={ind === arr.length-1 ? 'top': undefined} 
               state={step === ind ? state : ElementStates.Default}

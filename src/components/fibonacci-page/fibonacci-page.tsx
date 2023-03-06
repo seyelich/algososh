@@ -5,7 +5,6 @@ import { Circle } from "../ui/circle/circle";
 import { Input } from "../ui/input/input";
 import { SolutionLayout } from "../ui/solution-layout/solution-layout";
 import styles from './fibonacci-page.module.css';
-import { v4 } from 'uuid';
 
 type FibStep = {
   nums: number[],
@@ -67,7 +66,7 @@ export const FibonacciPage: React.FC = () => {
       {currentStep &&
         <div className={styles.circles}>
         {
-          currentStep.nums.map((num, ind) => <Circle letter={num.toString()} key={v4()} index={ind} />)
+          currentStep.nums.map((num, ind) => <Circle letter={num.toString()} key={ind} index={ind} />)
         }
         </div>
       }

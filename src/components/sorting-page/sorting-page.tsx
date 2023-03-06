@@ -1,4 +1,4 @@
-import React, { FormEvent, useState } from "react";
+import React, { FormEvent, useState, useEffect } from "react";
 import { Direction } from "../../types/direction";
 import { Button } from "../ui/button/button";
 import { RadioInput } from "../ui/radio-input/radio-input";
@@ -15,6 +15,14 @@ export const SortingPage: React.FC = () => {
   const [direction, setDirection] = useState('asc');
   const [isLoading, setIsLoading] = useState(false);
   const {values, handleChange} = useForm({sorting: 'selection'});
+
+  const handleRandomArr = () => {
+    setNums(randomArr().map(el => ({val: el, color: ElementStates.Default})));
+  }
+
+  useEffect(() => {
+    handleRandomArr();
+  }, []);
 
   const selectionSort = async (arr: {val: number, color: ElementStates}[]) => {
     setIsLoading(true);
@@ -76,10 +84,6 @@ export const SortingPage: React.FC = () => {
     else {
       return bubbleSort(nums);
     }
-  }
-
-  const handleRandomArr = () => {
-    setNums(randomArr().map(el => ({val: el, color: ElementStates.Default})));
   }
 
   const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
