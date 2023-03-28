@@ -1,9 +1,10 @@
 import { TArr } from "../types/array";
 
-export const swap = (arr: TArr<string | number>, firstIndex: number, secondIndex: number): void => {
+export const swap = (arr: TArr<string | number>, firstIndex: number, secondIndex: number): TArr<string | number> => {
     const temp = arr[firstIndex];
     arr[firstIndex] = arr[secondIndex];
     arr[secondIndex] = temp;
+    return arr;
 }
 
 export const getRandomInt = (min: number, max: number) => {
