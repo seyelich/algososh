@@ -65,7 +65,7 @@ export const ListPage: React.FC = () => {
     const newArr = [...arr];
     setCurrVal(newArr[i].val);
 
-    if(i === 0 || i === newArr.length-1 && operation !== 'delInd') {
+    if((i === 0 || i === newArr.length-1) && operation !== 'delInd') {
       newArr[i] = {...newArr[i], color: ElementStates.Changing};
       setArr([...newArr]);
     } else {
@@ -99,7 +99,7 @@ export const ListPage: React.FC = () => {
     i === newArr.length-1 ? list.append(value) : list.addByInd(value, i);
     setCurrVal(value);
     
-    if(i === 0 || i === newArr.length-1 && operation !== 'addInd') {
+    if((i === 0 || i === newArr.length-1) && operation !== 'addInd') {
       newArr = getColoredArr();
       const actualIndex = i === 0 ? i : i+1
       await new Promise(resolve => setTimeout(resolve, DELAY_IN_MS));
@@ -182,28 +182,28 @@ export const ListPage: React.FC = () => {
             text='Добавить в head' 
             name='addHead'
             onClick={handleAddHead} 
-            disabled={name !== 'addHead' && isLoading || list.getSize() === 6 || values.val === ''}
+            disabled={(name !== 'addHead' && isLoading) || list.getSize() === 6 || values.val === ''}
             isLoader={name === 'addHead' && isLoading}
           />
           <Button 
             text='Добавить в tail'
             name="addTail" 
             onClick={handleAddTail} 
-            disabled={name !== 'addTail' && isLoading || list.getSize() === 6 || values.val === ''}
+            disabled={(name !== 'addTail' && isLoading) || list.getSize() === 6 || values.val === ''}
             isLoader={name === 'addTail' && isLoading}
           />
           <Button 
             text='Удалить из head' 
             name="delHead" 
             onClick={handleDeleteHead} 
-            disabled={name !== 'delHead' && isLoading || list.getSize() === 0} 
+            disabled={(name !== 'delHead' && isLoading )|| list.getSize() === 0} 
             isLoader={name === 'delHead' && isLoading}
           />
           <Button 
             text='Удалить из tail'
             name="delTail" 
             onClick={handleDeleteTail} 
-            disabled={name !== 'delTail' && isLoading || list.getSize() === 0}
+            disabled={(name !== 'delTail' && isLoading) || list.getSize() === 0}
             isLoader={name === 'delTail' && isLoading} 
           />
         </fieldset>
@@ -221,14 +221,14 @@ export const ListPage: React.FC = () => {
             text="Добавить по индексу" 
             onClick={handleAddInd} 
             name='addInd'
-            disabled={name !== 'addInd' && isLoading || list.getSize() === 6 || values.val === '' || values.ind === '' || index >= list.getSize() || index < 0}
+            disabled={(name !== 'addInd' && isLoading )|| list.getSize() === 6 || values.val === '' || values.ind === '' || index >= list.getSize() || index < 0}
             isLoader={name === 'addInd' && isLoading} 
           />
           <Button 
             text="Удалить по индексу" 
             onClick={handleDelInd} 
             name='delInd' 
-            disabled={name !== 'delInd' && isLoading || list.getSize() === 0 || values.ind === '' || index >= list.getSize() || index < 0} 
+            disabled={(name !== 'delInd' && isLoading) || list.getSize() === 0 || values.ind === '' || index >= list.getSize() || index < 0} 
             isLoader={name === 'delInd' && isLoading}
           />
         </fieldset>

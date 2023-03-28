@@ -126,7 +126,7 @@ export const SortingPage: React.FC = () => {
             onClick={() => setDirection('asc')} 
             type='submit' 
             isLoader={direction === 'asc' && isLoading} 
-            disabled={direction === 'desc' && isLoading || nums.length===0} 
+            disabled={(direction === 'desc' && isLoading) || nums.length===0} 
             extraClass={styles.btn}
           />
           <Button 
@@ -135,7 +135,7 @@ export const SortingPage: React.FC = () => {
             onClick={() => setDirection('desc')} 
             type='submit' 
             isLoader={direction === 'desc' && isLoading} 
-            disabled={direction === 'asc' && isLoading || nums.length===0} 
+            disabled={(direction === 'asc' && isLoading) || nums.length===0} 
             extraClass={styles.btn}
           />
         </fieldset>
