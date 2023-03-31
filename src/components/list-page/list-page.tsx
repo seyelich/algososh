@@ -177,6 +177,7 @@ export const ListPage: React.FC = () => {
             value={values.val}
             onChange={handleChange}
             disabled={isLoading}
+            data-testid='valInput'
           />
           <Button 
             text='Добавить в head' 
@@ -184,6 +185,7 @@ export const ListPage: React.FC = () => {
             onClick={handleAddHead} 
             disabled={(name !== 'addHead' && isLoading) || list.getSize() === 6 || values.val === ''}
             isLoader={name === 'addHead' && isLoading}
+            data-testid='addHead'
           />
           <Button 
             text='Добавить в tail'
@@ -191,6 +193,7 @@ export const ListPage: React.FC = () => {
             onClick={handleAddTail} 
             disabled={(name !== 'addTail' && isLoading) || list.getSize() === 6 || values.val === ''}
             isLoader={name === 'addTail' && isLoading}
+            data-testid='addTail'
           />
           <Button 
             text='Удалить из head' 
@@ -198,6 +201,7 @@ export const ListPage: React.FC = () => {
             onClick={handleDeleteHead} 
             disabled={(name !== 'delHead' && isLoading )|| list.getSize() === 0} 
             isLoader={name === 'delHead' && isLoading}
+            data-testid='delHead'
           />
           <Button 
             text='Удалить из tail'
@@ -205,6 +209,7 @@ export const ListPage: React.FC = () => {
             onClick={handleDeleteTail} 
             disabled={(name !== 'delTail' && isLoading) || list.getSize() === 0}
             isLoader={name === 'delTail' && isLoading} 
+            data-testid='delTail'
           />
         </fieldset>
         <fieldset className={styles.fieldset} >
@@ -216,6 +221,7 @@ export const ListPage: React.FC = () => {
             onChange={handleChange}
             type='number'
             disabled={isLoading}
+            data-testid='indInput'
           />
           <Button 
             text="Добавить по индексу" 
@@ -223,6 +229,7 @@ export const ListPage: React.FC = () => {
             name='addInd'
             disabled={(name !== 'addInd' && isLoading )|| list.getSize() === 6 || values.val === '' || values.ind === '' || index >= list.getSize() || index < 0}
             isLoader={name === 'addInd' && isLoading} 
+            data-testid='addInd'
           />
           <Button 
             text="Удалить по индексу" 
@@ -230,6 +237,7 @@ export const ListPage: React.FC = () => {
             name='delInd' 
             disabled={(name !== 'delInd' && isLoading) || list.getSize() === 0 || values.ind === '' || index >= list.getSize() || index < 0} 
             isLoader={name === 'delInd' && isLoading}
+            data-testid='delInd'
           />
         </fieldset>
       </form>

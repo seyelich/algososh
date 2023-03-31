@@ -1,16 +1,10 @@
 import { SHORT_DELAY_IN_MS } from "../../src/constants/delays";
+import { firstEl, secondEl, testAddBtnQueueSelector, testCircleIndSelector, testCircleSelector, testClearBtnQueueSelector, testColors, testDeleteBtnQueueSelector, testHeadSelector, testTailSelector, thirdEl } from "../../src/constants/test";
 
 describe('Queue page works correctly', () => {
     beforeEach(() => {
         cy.visit('/queue');
     });
-
-    const firstEl = '1';
-    const secondEl = '2';
-    const thirdEl = '3';
-    
-    const defaultColor = 'rgb(0, 50, 255)';
-    const color = 'rgb(210, 82, 225)';
 
     it('should make input disabled', () => {
         cy.get('input').should('be.empty');
@@ -21,12 +15,21 @@ describe('Queue page works correctly', () => {
         cy.clock();
 
         cy.get('input').type(firstEl);
-        cy.get('button[class*=text]').first().should('be.not.disabled');
-        cy.get('button[class*=text]').first().click();
-        cy.get('[class*=circle_circle]').should('have.css', 'border-color', color);
+        cy.get(testAddBtnQueueSelector).should('be.not.disabled');
+        cy.get(testAddBtnQueueSelector).click();
+        cy.get('input').should('be.empty');
+        cy.get(testAddBtnQueueSelector).should('be.disabled');
+        cy.get(testDeleteBtnQueueSelector).should('be.disabled');
+        cy.get(testClearBtnQueueSelector).should('be.disabled');
+        cy.get(testCircleSelector).should('have.css', 'border-color', testColors.changing);
+        cy.get(testHeadSelector).should('contain', 'head');
+        cy.get(testTailSelector).should('contain', 'tail');
 
         cy.tick(SHORT_DELAY_IN_MS);
-        cy.get('[class*=circle_circle]').should('have.css', 'border-color', defaultColor);
+        cy.get(testCircleSelector).should('have.css', 'border-color', testColors.default);
+        cy.get(testAddBtnQueueSelector).should('be.disabled');
+        cy.get(testDeleteBtnQueueSelector).should('be.not.disabled');
+        cy.get(testClearBtnQueueSelector).should('be.not.disabled');
 
         cy.clock().invoke('restore');
     });
@@ -35,16 +38,23 @@ describe('Queue page works correctly', () => {
         cy.clock();
 
         cy.get('input').type(firstEl);
-        cy.get('button[class*=text]').first().should('be.not.disabled');
-        cy.get('button[class*=text]').first().click();
+        cy.get(testAddBtnQueueSelector).click();
         
         cy.tick(SHORT_DELAY_IN_MS);
-        cy.get('button[class*=text]').eq(1).should('be.not.disabled');
-        cy.get('button[class*=text]').eq(1).click();
-        cy.get('[class*=circle_circle]').should('have.css', 'border-color', color);
+        cy.get(testDeleteBtnQueueSelector).should('be.not.disabled');
+        cy.get(testDeleteBtnQueueSelector).click();
+        cy.get(testAddBtnQueueSelector).should('be.disabled');
+        cy.get(testClearBtnQueueSelector).should('be.disabled');
+        cy.get(testDeleteBtnQueueSelector).should('be.disabled');
+        cy.get(testCircleSelector).should('have.css', 'border-color', testColors.changing);
 
         cy.tick(SHORT_DELAY_IN_MS);
-        cy.get('[class*=circle_circle]').should('contain.value', ''); //will not work with several elems
+        cy.get(testCircleSelector).should('contain.value', '');
+        cy.get(testAddBtnQueueSelector).should('be.disabled');
+        cy.get(testDeleteBtnQueueSelector).should('be.disabled');
+        cy.get(testClearBtnQueueSelector).should('be.disabled');
+        cy.get(testHeadSelector).should('contain', '');
+        cy.get(testTailSelector).should('contain', '');
 
         cy.clock().invoke('restore');
     });
@@ -52,23 +62,23 @@ describe('Queue page works correctly', () => {
     it('should clear queue correctly', () => {
         cy.clock();
         cy.get('input').type(firstEl);
-        cy.get('button[class*=text]').first().should('be.not.disabled');
-        cy.get('button[class*=text]').first().click();
+        cy.get(testAddBtnQueueSelector).click();
 
         cy.tick(SHORT_DELAY_IN_MS);
         cy.get('input').type(secondEl);
-        cy.get('button[class*=text]').first().should('be.not.disabled');
-        cy.get('button[class*=text]').first().click();
+        cy.get(testAddBtnQueueSelector).click();
 
         cy.tick(SHORT_DELAY_IN_MS);
         cy.get('input').type(thirdEl);
-        cy.get('button[class*=text]').first().should('be.not.disabled');
-        cy.get('button[class*=text]').first().click();
+        cy.get(testAddBtnQueueSelector).click();
 
         cy.tick(SHORT_DELAY_IN_MS);
-        cy.get('button[class*=text]').eq(2).should('be.not.disabled');
-        cy.get('button[class*=text]').eq(2).click();
-        cy.get('[class*=circle_circle]').should('contain.value', '');
+        cy.get(testClearBtnQueueSelector).should('be.not.disabled');
+        cy.get(testClearBtnQueueSelector).click();
+        cy.get(testCircleSelector).should('contain', '');
+        cy.get(testAddBtnQueueSelector).should('be.disabled');
+        cy.get(testDeleteBtnQueueSelector).should('be.disabled');
+        cy.get(testClearBtnQueueSelector).should('be.disabled');
 
         cy.clock().invoke('restore');
     });

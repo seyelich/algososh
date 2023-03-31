@@ -1,16 +1,21 @@
 import { DELAY_IN_MS } from "../../src/constants/delays";
+import { 
+    firstEl,
+    secondEl,
+    testAddBtnStackSelector, 
+    testCircleIndSelector, 
+    testCircleSelector, 
+    testClearBtnStackSelector, 
+    testColors, 
+    testDeleteBtnStackSelector, 
+    thirdEl
+} from "../../src/constants/test";
+import { testStackEl } from "../support/utils";
 
 describe('Stack page works correctly', () => {
     beforeEach(() => {
         cy.visit('/stack');
     });
-
-    const firstEl = '1';
-    const secondEl = '2';
-    const thirdEl = '3';
-    
-    const defaultColor = 'rgb(0, 50, 255)';
-    const color = 'rgb(210, 82, 225)';
 
     it('should make input disabled', () => {
         cy.get('input').should('be.empty');
@@ -21,12 +26,30 @@ describe('Stack page works correctly', () => {
         cy.clock();
 
         cy.get('input').type(firstEl);
-        cy.get('button[class*=text]').first().should('be.not.disabled');
-        cy.get('button[class*=text]').first().click();
-        cy.get('[class*=circle_circle]').should('have.css', 'border-color', color);
+        cy.get(testAddBtnStackSelector).should('be.not.disabled');
+        cy.get(testAddBtnStackSelector).click();
+        cy.get(testDeleteBtnStackSelector).should('be.disabled');
+        cy.get(testClearBtnStackSelector).should('be.disabled');
+        cy.get('input').should('be.empty');
 
-        cy.tick(DELAY_IN_MS);
-        cy.get('[class*=circle_circle]').should('have.css', 'border-color', defaultColor);
+        testStackEl(firstEl);
+
+        cy.get(testAddBtnStackSelector).should('be.disabled');
+        cy.get(testDeleteBtnStackSelector).should('be.not.disabled');
+        cy.get(testClearBtnStackSelector).should('be.not.disabled');
+
+        cy.get('input').type(secondEl);
+
+        cy.get(testAddBtnStackSelector).should('be.not.disabled');
+        cy.get(testAddBtnStackSelector).click();
+        cy.get(testDeleteBtnStackSelector).should('be.disabled');
+        cy.get(testClearBtnStackSelector).should('be.disabled');
+
+        testStackEl(secondEl);
+
+        cy.get(testAddBtnStackSelector).should('be.disabled');
+        cy.get(testDeleteBtnStackSelector).should('be.not.disabled');
+        cy.get(testClearBtnStackSelector).should('be.not.disabled');
 
         cy.clock().invoke('restore');
     });
@@ -35,15 +58,26 @@ describe('Stack page works correctly', () => {
         cy.clock();
 
         cy.get('input').type(firstEl);
-        cy.get('button[class*=text]').first().should('be.not.disabled');
-        cy.get('button[class*=text]').first().click();
+        cy.get(testAddBtnStackSelector).click();
 
-        cy.get('button[class*=text]').eq(1).should('be.not.disabled');
-        cy.get('button[class*=text]').eq(1).click();
-        cy.get('[class*=circle_circle]').should('have.css', 'border-color', color);
+        cy.tick(DELAY_IN_MS*2);
+        cy.get(testDeleteBtnStackSelector).should('be.not.disabled');
+        cy.get(testDeleteBtnStackSelector).click();
+        cy.get(testAddBtnStackSelector).should('be.disabled');
+        cy.get(testClearBtnStackSelector).should('be.disabled');
 
-        cy.tick(DELAY_IN_MS);
-        cy.get('[class*=circle_circle]').should('not.exist');
+        cy.get(testCircleSelector).last().should('have.css', 'border-color', testColors.changing);
+
+        cy.get(testCircleSelector).each(($el, ind) => {
+            cy.get(testCircleIndSelector).contains(ind);
+
+            cy.tick(DELAY_IN_MS);
+            cy.get($el).should('not.exist');
+        });
+
+        cy.get(testDeleteBtnStackSelector).should('be.disabled');
+        cy.get(testAddBtnStackSelector).should('be.disabled');
+        cy.get(testClearBtnStackSelector).should('be.disabled');
 
         cy.clock().invoke('restore');
     });
@@ -51,23 +85,27 @@ describe('Stack page works correctly', () => {
     it('should clear stack correctly', () => {
         cy.clock();
         cy.get('input').type(firstEl);
-        cy.get('button[class*=text]').first().should('be.not.disabled');
-        cy.get('button[class*=text]').first().click();
+        cy.get(testAddBtnStackSelector).click();
 
         cy.tick(DELAY_IN_MS);
         cy.get('input').type(secondEl);
-        cy.get('button[class*=text]').first().should('be.not.disabled');
-        cy.get('button[class*=text]').first().click();
+        cy.get(testAddBtnStackSelector).click();
 
         cy.tick(DELAY_IN_MS);
         cy.get('input').type(thirdEl);
-        cy.get('button[class*=text]').first().should('be.not.disabled');
-        cy.get('button[class*=text]').first().click();
+        cy.get(testAddBtnStackSelector).click();
 
         cy.tick(DELAY_IN_MS);
-        cy.get('button[class*=text]').eq(2).should('be.not.disabled');
-        cy.get('button[class*=text]').eq(2).click();
-        cy.get('[class*=circle_circle]').should('have.length', 0);
+        cy.get(testClearBtnStackSelector).should('be.not.disabled');
+        cy.get(testDeleteBtnStackSelector).should('be.not.disabled');
+        cy.get(testAddBtnStackSelector).should('be.disabled');
+        cy.get('input').should('be.empty');
+        cy.get(testClearBtnStackSelector).click();
+
+        cy.get(testClearBtnStackSelector).should('be.disabled');
+        cy.get(testDeleteBtnStackSelector).should('be.disabled');
+        cy.get(testAddBtnStackSelector).should('be.disabled');
+        cy.get(testCircleSelector).should('have.length', 0);
 
         cy.clock().invoke('restore');
     });

@@ -60,15 +60,22 @@ export const StackPage: React.FC = () => {
             disabled={!values.str || st.size() > 25 || isLoading} 
             type='submit' 
             isLoader={type === 'submit' && isLoading} 
+            data-testid='addBtn'
           />
           <Button 
             text="Удалить" 
             onClick={handleDelete} 
             disabled={st.size() === 0 || isLoading}
-            isLoader={type === '' && isLoading} 
+            isLoader={type === '' && isLoading}
+            data-testid='deleteBtn' 
           />
         </fieldset>
-        <Button text="Очистить" type="reset" disabled={st.size() === 0 || isLoading} />
+        <Button 
+          text="Очистить" 
+          type="reset" 
+          disabled={st.size() === 0 || isLoading} 
+          data-testid='clearBtn'
+        />
       </form>
       <div className={styles.circles}>
         {

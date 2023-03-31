@@ -1,6 +1,5 @@
-import { DELAY_IN_MS } from '../../src/constants/delays';
 import { testColors } from '../../src/constants/test';
-//import { ElementStates } from "../../../types/element-states";
+import { testStringColor } from '../support/utils';
 
 describe('String page works correctly', () => {
     beforeEach(() => {
@@ -56,33 +55,9 @@ describe('String page works correctly', () => {
 
         cy.clock();
         
-        cy.tick(DELAY_IN_MS);
-        cy.get('[class*=circle_circle]').as('circles');
-        cy.get('@circles').each(($el, ind) => {
-            cy.get($el)
-                .should('have.css', 'border-color', preStepColors[ind])
-                .should('contain', defaultStep[ind]);
-        });
-        
-        cy.tick(DELAY_IN_MS);
-        cy.get('@circles').each(($el, ind) => {
-            cy.get($el)
-                .should('have.css', 'border-color', firstStepColors[ind])
-                .should('contain', firstStep[ind]);
-        });
-
-        cy.tick(DELAY_IN_MS);
-        cy.get('@circles').each(($el, ind) => {
-            cy.get($el)
-                .should('have.css', 'border-color', secondStepColors[ind])
-                .should('contain', firstStep[ind])
-        });
-
-        cy.tick(DELAY_IN_MS);
-        cy.get('@circles').each(($el, ind) => {
-            cy.get($el)
-                .should('have.css', 'border-color', thirdStepColors[ind])
-                .should('contain', secondStep[ind])
-        });
+        testStringColor(preStepColors, defaultStep);
+        testStringColor(firstStepColors, firstStep);
+        testStringColor(secondStepColors, firstStep);
+        testStringColor(thirdStepColors, secondStep);
     });
 })

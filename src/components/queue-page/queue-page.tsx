@@ -70,15 +70,22 @@ export const QueuePage: React.FC = () => {
             type="submit" 
             disabled={!values.str || length === q.s() || isLoading}
             isLoader={type === 'submit' && isLoading}
+            data-testid='qBtn'
           />
           <Button 
             text="Удалить" 
             onClick={handleDelete} 
             disabled={length === 0 || isLoading} 
             isLoader={type === '' && isLoading}
+            data-testid='dQBtn'
           />
         </fieldset>
-        <Button text="Очистить" type="reset" disabled={length === 0 || isLoading}/>
+        <Button 
+          text="Очистить" 
+          type="reset" 
+          disabled={length === 0 || isLoading}
+          data-testid='cQBtn'
+        />
       </form>
       <div className={styles.circles}>
         {

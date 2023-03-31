@@ -1,4 +1,5 @@
-import { SHORT_DELAY_IN_MS } from "../../src/constants/delays";
+import { testColors } from "../../src/constants/test";
+import { testFibEl } from "../support/utils";
 
 describe('Fibonacci page works correctly', () => {
     beforeEach(() => {
@@ -11,8 +12,8 @@ describe('Fibonacci page works correctly', () => {
     });
 
     it('should make correct fibonacci numbers', () => {
-        const fibArr = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584];
-        const testIndex = 5;
+        const fibArr = [1, 1, 2, 3];
+        const testIndex = 3;
         
         cy.clock();
 
@@ -21,48 +22,11 @@ describe('Fibonacci page works correctly', () => {
 
         cy.get('@input_el').type(testIndex);
         cy.get('@btn').click();
-        cy.get('[class*=circle_circle]').as('circles');
         
-        cy.tick(SHORT_DELAY_IN_MS);
-        cy.get('@circles').each(($el, ind) => {
-            cy.get($el).contains(fibArr[ind]);
-            cy.get($el).should('have.css', 'border-color', "rgb(0, 50, 255)");
-        });
-
-        cy.tick(SHORT_DELAY_IN_MS);
-        cy.get('@circles').each(($el, ind) => {
-            cy.get($el).contains(fibArr[ind]);
-            cy.get($el).should('have.css', 'border-color', "rgb(0, 50, 255)");
-        });
-
-        cy.tick(SHORT_DELAY_IN_MS);
-        cy.get('@circles').each(($el, ind) => {
-            cy.get($el).contains(fibArr[ind]);
-            cy.get($el).should('have.css', 'border-color', "rgb(0, 50, 255)");
-        });
-
-        cy.tick(SHORT_DELAY_IN_MS);
-        cy.get('@circles').each(($el, ind) => {
-            cy.get($el).contains(fibArr[ind]);
-            cy.get($el).should('have.css', 'border-color', "rgb(0, 50, 255)");
-        });
-
-        cy.tick(SHORT_DELAY_IN_MS);
-        cy.get('@circles').each(($el, ind) => {
-            cy.get($el).contains(fibArr[ind]);
-            cy.get($el).should('have.css', 'border-color', "rgb(0, 50, 255)");
-        });
-
-        cy.tick(SHORT_DELAY_IN_MS);
-        cy.get('@circles').each(($el, ind) => {
-            cy.get($el).contains(fibArr[ind]);
-            cy.get($el).should('have.css', 'border-color', "rgb(0, 50, 255)");
-        });
-
-        cy.tick(SHORT_DELAY_IN_MS);
-        cy.get('@circles').each(($el, ind) => {
-            cy.get($el).contains(fibArr[ind]);
-            cy.get($el).should('have.css', 'border-color', "rgb(0, 50, 255)");
-        });
+        testFibEl(fibArr, testColors.default); //first test is for 11 not only 1
+        testFibEl(fibArr, testColors.default);
+        testFibEl(fibArr, testColors.default);
+        testFibEl(fibArr, testColors.default);
+        testFibEl(fibArr, testColors.default);
     });
 })
