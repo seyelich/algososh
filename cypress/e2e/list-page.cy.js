@@ -66,8 +66,6 @@ describe('List page works correctly', () => {
         });
 
         it('by index', () => {
-            //cy.clock();
-
             cy.get(testValInputSelector).type(firstEl);
             cy.get(testIndInputQueueSelector).type(testInd)
             cy.get(testAddIndSelector).should('be.not.disabled');
@@ -91,8 +89,6 @@ describe('List page works correctly', () => {
             cy.wait(DELAY_IN_MS);
             cy.get(testSmallCircleSelector).should('not.exist');
             cy.get(testCircleSelector).eq(2).should('have.css', 'border-color', testColors.default);
-    
-           // cy.clock().invoke('restore');
         });
     });
 
@@ -102,8 +98,6 @@ describe('List page works correctly', () => {
 
             cy.get(testDeleteHeadSelector).should('be.not.disabled');
             cy.get(testDeleteHeadSelector).click();
-
-            cy.tick(DELAY_IN_MS);
             cy.get(testCircleSelector).should('have.css', 'border-color', testColors.changing);
 
             cy.tick(DELAY_IN_MS);
@@ -123,8 +117,6 @@ describe('List page works correctly', () => {
 
             cy.get(testDeleteTailSelector).should('be.not.disabled');
             cy.get(testDeleteTailSelector).click();
-
-            cy.tick(DELAY_IN_MS);
             cy.get(testCircleSelector).last().should('have.css', 'border-color', testColors.changing);
 
             cy.tick(DELAY_IN_MS);
@@ -140,8 +132,6 @@ describe('List page works correctly', () => {
         });
 
         it('by index', () => {
-            //cy.clock();
-
             cy.get(testIndInputQueueSelector).type(testInd)
             
             cy.get(testDeleteIndSelector).should('be.not.disabled');
@@ -162,8 +152,6 @@ describe('List page works correctly', () => {
             cy.wait(DELAY_IN_MS);
             cy.get(testSmallCircleSelector).should('not.exist');
             cy.get(testCircleSelector).eq(2).should('have.css', 'border-color', testColors.default);
-
-           // cy.clock().invoke('restore');
         });
     });
 })

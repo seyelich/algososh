@@ -15,6 +15,7 @@ import { testStackEl } from "../support/utils";
 describe('Stack page works correctly', () => {
     beforeEach(() => {
         cy.visit('/stack');
+        cy.clock();
     });
 
     it('should make input disabled', () => {
@@ -23,8 +24,6 @@ describe('Stack page works correctly', () => {
     });
 
     it('should add element correctly', () => {
-        cy.clock();
-
         cy.get('input').type(firstEl);
         cy.get(testAddBtnStackSelector).should('be.not.disabled');
         cy.get(testAddBtnStackSelector).click();
@@ -55,12 +54,9 @@ describe('Stack page works correctly', () => {
     });
 
     it('should delete element correctly', () => {
-        cy.clock();
-
         cy.get('input').type(firstEl);
         cy.get(testAddBtnStackSelector).click();
-
-        cy.tick(DELAY_IN_MS*2);
+        
         cy.get(testDeleteBtnStackSelector).should('be.not.disabled');
         cy.get(testDeleteBtnStackSelector).click();
         cy.get(testAddBtnStackSelector).should('be.disabled');
@@ -83,7 +79,6 @@ describe('Stack page works correctly', () => {
     });
 
     it('should clear stack correctly', () => {
-        cy.clock();
         cy.get('input').type(firstEl);
         cy.get(testAddBtnStackSelector).click();
 
