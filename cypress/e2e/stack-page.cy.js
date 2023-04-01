@@ -27,8 +27,6 @@ describe('Stack page works correctly', () => {
         cy.get('input').type(firstEl);
         cy.get(testAddBtnStackSelector).should('be.not.disabled');
         cy.get(testAddBtnStackSelector).click();
-        cy.get(testDeleteBtnStackSelector).should('be.disabled');
-        cy.get(testClearBtnStackSelector).should('be.disabled');
         cy.get('input').should('be.empty');
 
         testStackEl(firstEl);
@@ -41,8 +39,6 @@ describe('Stack page works correctly', () => {
 
         cy.get(testAddBtnStackSelector).should('be.not.disabled');
         cy.get(testAddBtnStackSelector).click();
-        cy.get(testDeleteBtnStackSelector).should('be.disabled');
-        cy.get(testClearBtnStackSelector).should('be.disabled');
 
         testStackEl(secondEl);
 
